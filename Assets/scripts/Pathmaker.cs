@@ -17,10 +17,57 @@ public class Pathmaker : MonoBehaviour {
 //	DECLARE CLASS MEMBER VARIABLES:
 //	Declare a private integer called counter that starts at 0; 		// counter var will track how many floor tiles I've instantiated
 //	Declare a public Transform called floorPrefab, assign the prefab in inspector;
-//	Declare a public Transform called pathmakerSpherePrefab, assign the prefab in inspector; 		// you'll have to make a "pathmakerSphere" prefab later
+//	Declare a public Transform called pathmakerSpherePrefab, assign the prefab in inspector; 		
+// you'll have to make a "pathmakerSphere" prefab later
+	
+	public Transform floorPrefab;
+	public Transform pathmakerSpherePrefab; 
+	private int thisLimit;
+	private int counter = 0;
+	private float randomSpawn;
 
+	public static int globalTileCount;
+
+	void Start() {
+		thisLimit = Random.Range(0, 100);
+		randomSpawn = Random.Range(0.95f, 1f);
+	}
 
 	void Update () {
+		if (globalTileCount > 500) {
+			Destroy(gameObject);
+			return;
+		}
+
+		if (counter < thisLimit) {
+			float randomNum = Random.Range(0.0f, 1.0f);
+			if (randomNum < 0.25f) {
+				transform.Rotate(0f, 90f, 0f);
+			}
+			else if (randomNum > 0.25f && randomNum < 0.5f) {
+				transform.Rotate(0f, -90f, 0f);
+			}
+			else if (randomNum > randomSpawn && randomNum < 1f) {
+				Instantiate(pathmakerSpherePrefab, transform.position, transform.rotation);
+			}
+
+			Transform newTile = Instantiate (floorPrefab, transform.position, transform.rotation);
+			newTile.gameObject.GetComponent<Renderer>().material.color = Random.ColorHSV();
+
+			transform.position += transform.forward * 5f;
+			//Vector3.forward is the world's forward
+
+			counter++;
+			globalTileCount++;
+		}
+		else {
+			Destroy(gameObject);
+		}
+
+		Debug.Log(globalTileCount);
+	}
+
+		
 //		If counter is less than 50, then:
 //			Generate a random number from 0.0f to 1.0f;
 //			If random number is less than 0.25f, then rotate myself 90 degrees;
@@ -33,7 +80,6 @@ public class Pathmaker : MonoBehaviour {
 //			Increment counter;
 //		Else:
 //			Destroy my game object; 		// self destruct if I've made enough tiles already
-	}
 
 } // end of class scope
 
@@ -58,7 +104,11 @@ public class Pathmaker : MonoBehaviour {
 // tune your values...
 
 // a. how long should a pathmaker live? etc.
+//			Each pathmaker is generating a random max number of tiles. The max number of tiles is 100, which doesn't
+//			take super long to spawn either.
 // b. how would you tune the probabilities to generate lots of long hallways? does it work?
+//			Make the chance of the pathmaker rotating smaller. So, for example, make it rotate one way if it's 0 - 0.12f and rotate
+//			the other if it's 0.12 - 0.24. The rest of the time just continue straight
 // c. tweak all the probabilities that you want... what % chance is there for a pathmaker to make a pathmaker? is that too high or too low?
 
 
