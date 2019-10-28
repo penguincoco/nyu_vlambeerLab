@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3443849241033162488}
   m_Layer: 0
   m_Name: PathMakerSphere
-  m_TagString: Untagged
+  m_TagString: PathMaker
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -105,6 +105,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5575b50532c45f4984a0392f98e35f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  floorPrefab: {fileID: 4113209856346078, guid: 65a6189e1bac1f549afc3dc95369929d,
-    type: 3}
+  tile1: {fileID: 7121374169687435409, guid: 4a1ab09b1ff6c44b8b8fa18381b9f513, type: 3}
+  tile2: {fileID: 2154961708653005837, guid: 971207f9034db4e178c3e06a8e3d8fc4, type: 3}
+  tile3: {fileID: 1475949553311688169, guid: 82f789207b2d948c595ac7ebaba6728e, type: 3}
   pathmakerSpherePrefab: {fileID: 3443849241033162489}
+  resetCheck: {fileID: 0}

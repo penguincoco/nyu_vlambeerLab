@@ -10,31 +10,30 @@ using UnityEngine;
 // put this script on a Sphere... it will move around, and drop a path of floor tiles behind it
 
 public class Pathmaker : MonoBehaviour {
-
-// STEP 2: ============================================================================================
-// translate the pseudocode below
-
-//	DECLARE CLASS MEMBER VARIABLES:
-//	Declare a private integer called counter that starts at 0; 		// counter var will track how many floor tiles I've instantiated
-//	Declare a public Transform called floorPrefab, assign the prefab in inspector;
-//	Declare a public Transform called pathmakerSpherePrefab, assign the prefab in inspector; 		
-// you'll have to make a "pathmakerSphere" prefab later
 	
-	public Transform floorPrefab;
+	public Transform tile1;
+	public Transform tile2;
+	public Transform tile3;
+	private Transform floorPrefab;
+
 	public Transform pathmakerSpherePrefab; 
 	private int thisLimit;
 	private int counter = 0;
 	private float randomSpawn;
 
+	public GameObject resetCheck; 
+
 	public static int globalTileCount;
 
 	void Start() {
+		//get random limit for each PathMaker and random chance of spawning another pathmaker (to make a forked path)
 		thisLimit = Random.Range(0, 100);
 		randomSpawn = Random.Range(0.95f, 1f);
 	}
 
 	void Update () {
 		if (globalTileCount > 500) {
+			resetCheck.GetComponent<Reset>().pathMakers.Remove(gameObject);
 			Destroy(gameObject);
 			return;
 		}
@@ -48,7 +47,20 @@ public class Pathmaker : MonoBehaviour {
 				transform.Rotate(0f, -90f, 0f);
 			}
 			else if (randomNum > randomSpawn && randomNum < 1f) {
-				Instantiate(pathmakerSpherePrefab, transform.position, transform.rotation);
+				Transform pathMaker = Instantiate(pathmakerSpherePrefab, transform.position, transform.rotation);
+				resetCheck.GetComponent<Reset>().pathMakers.Add(pathMaker.gameObject);
+			}
+
+			//determine which tile to spawn
+			float tileType = Random.Range(0.0f, 1.0f);
+			if (tileType < 0.33f) {
+				floorPrefab = tile1;
+			}
+			else if (tileType > 0.33f && tileType < 0.66f) {
+				floorPrefab = tile2;
+			}
+			else {
+				floorPrefab = tile3;
 			}
 
 			Transform newTile = Instantiate (floorPrefab, transform.position, transform.rotation);
@@ -61,13 +73,30 @@ public class Pathmaker : MonoBehaviour {
 			globalTileCount++;
 		}
 		else {
+			resetCheck.GetComponent<Reset>().pathMakers.Remove(gameObject);
 			Destroy(gameObject);
 		}
 
-		Debug.Log(globalTileCount);
+		//make sure the tiles don't spawn out of camera range
+		Vector3 screenPos = Camera.main.WorldToScreenPoint(this.transform.position);
+
+		if (screenPos.x < 0 || screenPos.y < 0 || screenPos.x + 1 > Screen.width || screenPos.y - 1 > Screen.height) {
+			resetCheck.GetComponent<Reset>().pathMakers.Remove(gameObject);
+			Destroy(gameObject);
+		}
 	}
+}
 
 		
+// STEP 2: ============================================================================================
+// translate the pseudocode below
+
+//	DECLARE CLASS MEMBER VARIABLES:
+//	Declare a private integer called counter that starts at 0; 		// counter var will track how many floor tiles I've instantiated
+//	Declare a public Transform called floorPrefab, assign the prefab in inspector;
+//	Declare a public Transform called pathmakerSpherePrefab, assign the prefab in inspector; 		
+// you'll have to make a "pathmakerSphere" prefab later
+
 //		If counter is less than 50, then:
 //			Generate a random number from 0.0f to 1.0f;
 //			If random number is less than 0.25f, then rotate myself 90 degrees;
@@ -80,8 +109,7 @@ public class Pathmaker : MonoBehaviour {
 //			Increment counter;
 //		Else:
 //			Destroy my game object; 		// self destruct if I've made enough tiles already
-
-} // end of class scope
+ // end of class scope
 
 // MORE STEPS BELOW!!!........
 
